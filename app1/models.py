@@ -19,6 +19,9 @@ class seller(models.Model):
     description = models.TextField()
     skills = models.CharField(max_length=400, blank=True)
     reviews = models.IntegerField()
+    #Dashboard attributes
+    nb_visitors = models.IntegerField(default=0)
+    clicks = models.IntegerField(default=0)
 class Post(models.Model):
     seller = models.ForeignKey(seller , on_delete=models.CASCADE)
     post_video = models.FileField(upload_to="videos",null=True,validators=[FileExtensionValidator(allowed_extensions=['MOV','avi','mp4','webm','mkv'])])
@@ -40,9 +43,22 @@ class Post(models.Model):
     post_keywords = models.CharField(max_length=300 , blank=True)
     maxSize_height = models.IntegerField()
     maxSize_width = models.IntegerField()
-    reviews = models.IntegerField()
     nb_reviews = models.IntegerField(default = 0)
     free_delivery = models.CharField(max_length=20,choices=(("Available","Available"),("Not available","Not available")))
     return_delivery = models.CharField(max_length=20,choices=(("Available","Available"),("Not available","Not available")))
     date = models.DateTimeField(default=timezone.now)
+class Order(models.Model):
+    seller = models.ForeignKey(seller, on_delete=models.CASCADE) 
+    date = models.DateTimeField(default=timezone.now)
+    costumer = models.ForeignKey(User , on_delete=models.CASCADE)
+    location = models.CharField(max_length=200) 
+    total_amount = models.FloatField()
+    status = models.CharField(max_length=100, choices=(('pending','pending'),('shipped','shipped'),('delivered','delivered')))
+class reviews(models.Model):
+    rating = models.IntegerField()
+    User = models.ForeignKey(User,on_delete=models.CASCADE)
+    text = models.TextField()
+    date=models.DateTimeField(default=timezone.now)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    
     

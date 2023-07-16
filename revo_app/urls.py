@@ -20,10 +20,15 @@ from app1.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from graphene_django.views import GraphQLView
+from app1 import views
 urlpatterns = [
     path('register/',register.as_view()),
     path("login/", logine.as_view()),
     path("seller/", sellers_managing.as_view()),
+    path("post/", posts_managing.as_view()),
+    path("order/", order_managing.as_view()),
+    path("statistics/",views.dashboard_data),
+    path("post/reviews/",reviews_managing.as_view()),
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

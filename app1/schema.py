@@ -5,11 +5,32 @@ class SellerType(DjangoObjectType):
     class Meta:
         model=seller
         fields ="__all__"
+class PostType(DjangoObjectType):
+    class Meta:
+        model=Post
+        fields="__all__"
+class OrderType(DjangoObjectType):
+    class Meta:
+        model=Order
+        fields="__all__"
+class ReviewType(DjangoObjectType):
+    class Meta:
+        model=reviews
+        fields="__all__"
 class Query(graphene.ObjectType):
-    all_sellers = graphene.List(SellerType)
     seller_by_id = graphene.Field(graphene.List(SellerType), id=graphene.ID(required=True))
+    post_by_id = graphene.Field(graphene.List(PostType), id=graphene.ID(required=True))
+    all_posts = graphene.List(PostType)
+    orders_by_seller_id = graphene.Field(graphene.List(OrderType), id=graphene.ID(required=True))
+    reviews_by_post_id = graphene.Field(graphene.List(ReviewType), id = graphene.ID(required=True))
     def resolve_seller_by_id(root , info,id):
         return [seller.objects.get(id=id)]
-    def resolve_all_sellers(root , info):
-        return seller.objects.all()
+    def resolve_posts_by_id(root , info, id):
+        return Post.objects.get(id=id)
+    def resolve_all_posts(root , info):
+        return Post.objects.all()
+    def resolve_orders_by_seller_id(root , info , id):
+        return Order.objects.filter(seller__id=id)
+    def resolve_reviews_by_post_id(root , info , id):
+        return reviews.objects.filter(post__id=id)
 schema = graphene.Schema(query=Query)

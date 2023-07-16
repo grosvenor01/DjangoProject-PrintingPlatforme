@@ -16,3 +16,15 @@ class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = seller
         fields = "__all__"
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__"
+class ReviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = reviews
+        fields = "__all__"
