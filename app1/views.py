@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework import generics,permissions
-from django.http import HttpResponse , JsonResponse
+from django.http import HttpResponse , JsonResponse 
 from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import LoginView as KnoxLoginView
@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from knox.models import AuthToken
 from rest_framework.decorators import api_view
 from django.middleware.csrf import get_token
+from django.shortcuts import redirect
 from .serializers import *
 # Create your views here.
 class register(generics.GenericAPIView):
@@ -180,3 +181,32 @@ class reviews_managing(APIView):
             return Response(status=202)
         except review.DoesNotExist :
             return Response({"error":"Review not found"})
+#! /usr/bin/env python3.6
+
+"""
+server.py
+Stripe Sample.
+Python 3.6 or newer required.
+"""
+import os
+import stripe
+from django.conf import settings 
+stripe.api_key = settings.STRIP_SECRET_KEY
+class StripCheckoutView(APIView):
+    def post(self,request):
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                {
+                    'price': 'price_1NVHVAGt8K1SPn6ZU4T8aMt9',
+                    'quantity': 1,
+                },
+                ],
+                payment_method_types =['card',],
+                mode='subscription',
+                success_url=settings.SITE_URL+ '?success=true&session_id={CHECKOUT_SESSION_ID}',
+                cancel_url=settings.SITE_URL+ '?canceled=true',
+            )
+        except Exception as e:
+            return Response({"error":"quelque chose s'est mal passé lors de la création d'une session pour stripe checkout"+str(e)} , status = 500)
+        return redirect(checkout_session.url)

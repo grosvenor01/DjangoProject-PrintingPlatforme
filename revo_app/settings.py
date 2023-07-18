@@ -129,9 +129,23 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+STRIP_SECRET_KEY = "sk_test_51NVH0wGt8K1SPn6ZyV8BgPpxIzciGbNv0AM9EEsvm1fCY9C3S3IBDMvDqyJLvt7UEaBdfwZutzi7TPqod4Stp9ux00M498U8LM"
+SITE_URL = "http://localhost:3000"
 import os 
 #media sttings 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000'
+]
+
+ALLOWED_HOSTS = [
+    'localhost',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]
