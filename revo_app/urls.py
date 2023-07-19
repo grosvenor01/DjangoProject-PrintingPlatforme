@@ -30,6 +30,7 @@ urlpatterns = [
     path("statistics/",views.dashboard_data),
     path("post/reviews/",reviews_managing.as_view()),
     path("Stripe/",StripCheckoutView.as_view()),
+    path("recomandation/sellers/",views.recommandation_location),
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

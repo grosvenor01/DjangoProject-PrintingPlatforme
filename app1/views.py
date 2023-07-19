@@ -1,15 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework import generics,permissions
-from django.http import HttpResponse , JsonResponse 
 from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import LoginView as KnoxLoginView
-from django.contrib.auth import login
-from knox.models import AuthToken
 from rest_framework.decorators import api_view
-from django.middleware.csrf import get_token
+from knox.views import LoginView as KnoxLoginView
+from knox.models import AuthToken
+from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.conf import settings 
 from .serializers import *
+import requests
+import stripe
+import math
 # Create your views here.
 class register(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -35,8 +37,19 @@ class logine(KnoxLoginView):
         return response
 class sellers_managing(APIView):
     def post(self , request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        api_key = '14fb619c206de8f57d4f8f2b00d0bcab'
+        url = f'http://api.ipstack.com/{ip}?access_key={api_key}'
+        response = requests.get(url)
+        data = response.json() 
         token = AuthToken.objects.get(token_key=request.COOKIES.get('login_token')[:8])
         request.data['User'] = token.user.id
+        request.data['lat'] = data['latitude']
+        request.data['lng'] = data['longitude']
         serializer = SellerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -181,18 +194,8 @@ class reviews_managing(APIView):
             return Response(status=202)
         except review.DoesNotExist :
             return Response({"error":"Review not found"})
-#! /usr/bin/env python3.6
-
-"""
-server.py
-Stripe Sample.
-Python 3.6 or newer required.
-"""
-import os
-import stripe
-from django.conf import settings 
 stripe.api_key = settings.STRIP_SECRET_KEY
-class StripCheckoutView(APIView):
+class StripCheckoutView(APIView): 
     def post(self,request):
         try:
             checkout_session = stripe.checkout.Session.create(
@@ -210,3 +213,32 @@ class StripCheckoutView(APIView):
         except Exception as e:
             return Response({"error":"quelque chose s'est mal passé lors de la création d'une session pour stripe checkout"+str(e)} , status = 500)
         return redirect(checkout_session.url)
+def get_distance(lat1,lng1,lat2,lng2):
+    radius = 3959  # Earth's radius in miles
+    dlat = math.radians(lat2 - lat1)
+    dlng = math.radians(lng2 - lng1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlng / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = radius * c
+    return distance
+@api_view(['GET'])
+def recommandation_location(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    api_key = '14fb619c206de8f57d4f8f2b00d0bcab'
+    url = f'http://api.ipstack.com/{ip}?access_key={api_key}'
+    response = requests.get(url)
+    data = response.json() 
+    lat1 =  data['latitude']
+    lng1 = data['longitude']
+    sellers = seller.objects.all() 
+    for s in sellers:
+        distance = get_distance(lat1, lng1,s.lat, s.lng)
+        seller.distance = distance
+    sellers = [seller for seller in sellers if seller.distance <= 1000]
+    sellers = sorted(sellers, key=lambda seller: seller.distance)
+    serializer = SellerSerializer(sellers , many=True)
+    return Response(serializer.data , status = 200)

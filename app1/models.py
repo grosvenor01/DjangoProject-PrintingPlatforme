@@ -13,6 +13,8 @@ class seller(models.Model):
     specialiste = models.CharField(max_length = 400)
     available = models.CharField(max_length=10 , choices=(("True","True"),("False","False"))) # available for work
     address = models.CharField(max_length = 400)
+    lat = models.FloatField()
+    lng = models.FloatField()
     phone = PhoneNumberField()
     birthday = models.DateField()
     sex = models.CharField(max_length=10 , choices=(("Male","Male"),("Female","Female")))
