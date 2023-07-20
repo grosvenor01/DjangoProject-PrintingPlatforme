@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'multiselectfield',
     'phonenumber_field',
     'rest_framework',
+    'channels',
     'knox',
     'app1',
+    'asynch_notif'
 ]
 GRAPHENE = {
     "SCHEMA": "app1.schema.schema"
@@ -76,7 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'revo_app.wsgi.application'
-
+ASGI_APPLICATION ='revo_app.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -149,3 +151,11 @@ ALLOWED_HOSTS = [
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
 ]
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
