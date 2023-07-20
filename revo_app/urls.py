@@ -15,12 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path , re_path , include
 from app1.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from graphene_django.views import GraphQLView
 from app1 import views
+from asynch_notif import routing
 urlpatterns = [
     path('register/',register.as_view()),
     path("login/", logine.as_view()),
