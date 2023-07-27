@@ -31,12 +31,16 @@ Query{<br>
 ## ws://localhost:8000/ws/notification/{room_name}/$
 used to establish connection with websocket protocole for asyncrone notification system you should send reciever : id (reciever id), send : {sender id} (9oli nmdlk example kifah t9der dirha)
 ## POST http://lcalhost:8000/register/
+This api is used to register or add a new user to the platforme 
 ### request example : 
 {"username":"root","email":"root@gmail.com",password:"......."} ( in case of the user use the gmail or fb registration you should just send his username , email , and choose one of his data to use as password this data ou can get from google api response)
 ## POST http://lcalhost:8000/login/
+This api is used to login a user and generate a token saved in the cookies of his browser this token is used each time when the user access to the platforme to not login evry time
+in the case in the token is expired the user should re login 
 ### request example : 
 {"username":"root",password:"......."} ( a token will sended and registred in the browser of the user and we will use it after to do all the rest of APIs )
 ## POST http://lcalhost:8000/seller/
+managine the seller of the platforme like  create a seller accound , update it ... etc 
 ### request example : 
 {
     "photo": null,
@@ -53,17 +57,58 @@ used to establish connection with websocket protocole for asyncrone notification
 ## PUT http://lcalhost:8000/seller/
 ### request example : 
 {
+"id":1,
 "specialiste": "3D printer",
 }
 ## POST http://lcalhost:8000/post/
+to create new service from the sellers 
 ### request example : 
-
-
+{ 
+    "post_video" :null,
+    "post_image" : null, 
+    "post_title" : "the title",
+    "post_description" :"the description",
+    "materials" : "PLA (Polylactic Acid)",
+    "post_keywords" :"some,keywords,separated,by,comma", 
+    "maxSize_height" :54,
+    "maxSize_width" :54,
+    "nb_reviews" : 100,
+    "free_delivery" :"Available", 
+    "return_delivery" :"Available"
+}<br>
+for some field there is specific data should be send here is it the column and the specific data : 
+materiels : 
+![materiels](https://github.com/grosvenor01/DjangoProject-PrintingPlatforme/assets/96534255/5b4c4782-5608-45f1-8b20-c5d2fffb08de)<br>
+free_delivery & return_delivery : <br>
+![delivery](https://github.com/grosvenor01/DjangoProject-PrintingPlatforme/assets/96534255/af28ce9c-05be-4e98-90f1-6f96361a5317)
+## PUT http://lcalhost:8000/post/
+### request example : 
+{
+    "id":1,
+    "free_delivery" :"Not available"
+}<br>
+## DELETE http://lcalhost:8000/post/
+### request example :
+{
+    "id" :1
+}<br>
 ## POST http://lcalhost:8000/order/
+Ths api is used to manage orders , create one , .... follow te status of it each time ... etc 
 ### request example : 
-
-## POST http://lcalhost:8000/statistics/
+{ 
+    "seller" : 1,
+    "location" : "148 rue address",
+    "total_amount" : 162.23,
+    "status" : "pending"
+}
+## PUT http://lcalhost:8000/order/
 ### request example : 
+{
+"id":1,
+"status" : "shipped"
+}
+## GET http://lcalhost:8000/statistics/
+used for the dashboard data 
 
 ## POST http://lcalhost:8000/post/reviews/
 ### request example : 
