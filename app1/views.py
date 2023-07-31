@@ -8,6 +8,7 @@ from knox.models import AuthToken
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.conf import settings 
+from asynch_notif.models import notification
 from .serializers import *
 import requests
 import stripe
@@ -114,6 +115,9 @@ class order_managing(APIView):
         serializer = OrderSerializer(data= request.data)
         if serializer.is_valid():
             serializer.save()
+            user = User.objects.get(id=seller.objects.get(id=request.data["seller"]).User.id)
+            notif = notification.objects.create(sender= token.user, reciever =user  , content = "You have a new costumer, See the details")
+            notif.save()
             return Response(serializer.data,status=201)
         else :
             return Response({'error':"error occured"}, status=400)
@@ -121,6 +125,7 @@ class order_managing(APIView):
         try : 
             token = AuthToken.objects.get(token_key=request.COOKIES.get('login_token')[:8])
             request.data["costumer"] = token.user.id
+            
         except AuthToken.DoesNotExist:
             return Response({'error':"Token expired"}, status=400)
         try :
