@@ -23,15 +23,15 @@ from graphene_django.views import GraphQLView
 from app1 import views
 from asynch_notif import routing
 urlpatterns = [
-    path('register/',register.as_view()),
-    path("login/", logine.as_view()),
-    path("seller/", sellers_managing.as_view()),
-    path("post/", posts_managing.as_view()),
-    path("order/", order_managing.as_view()),
-    path("statistics/",views.dashboard_data),
-    path("post/reviews/",reviews_managing.as_view()),
-    path("Stripe/",StripCheckoutView.as_view()),
-    path("recomandation/sellers/",views.recommandation_location),
+    path('register/',register.as_view(),name="register"),
+    path("login/", logine.as_view(),name="login"),
+    path("seller/", sellers_managing.as_view(),name="seller"),
+    path("post/", posts_managing.as_view(),name="post"),
+    path("order/", order_managing.as_view(),name="order"),
+    path("statistics/",views.dashboard_data,name="statistics"),
+    path("post/reviews/",reviews_managing.as_view(),name="reviews"),
+    path("Stripe/",StripCheckoutView.as_view(),name="stripe"),
+    path("recomandation/sellers/",views.recommandation_location,name="rec_location"),
     path('admin/', admin.site.urls),
     path("graphql/", GraphQLView.as_view(graphiql=True)),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
